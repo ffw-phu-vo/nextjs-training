@@ -17,6 +17,5 @@ export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  sleep(10000);
   res.status(200).json({ name: "John Doe" });
 }
