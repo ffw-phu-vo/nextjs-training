@@ -1,19 +1,36 @@
-import axios from 'axios'
-import React, { useEffect } from 'react'
+import axios from "axios";
+import React, { useEffect } from "react";
+import httpClient from "../helper/httpClient";
 
 const Protected = () => {
   useEffect(() => {
-    axios.get('http://localhost:5000/protected')
-      .then(res => {
+    httpClient
+      .get("/protected")
+      .then((res) => {
         console.log(res);
       })
-      .catch(err => {
-        console.log(err.response)
-      })
-  }, [])
-  return (
-    <div>protected</div>
-  )
-}
+      .catch((err) => {
+        console.log(err.response);
+      });
+  }, []);
 
-export default Protected
+  const handleGetRefreshToken = () => {
+    axios
+      .get("http://localhost:5000/refresh-token", {
+        headers: { refreshtoken: `${localStorage.getItem("my-refresh-token")}` },
+      })
+      .then((res) => {
+        console.log(res);
+        localStorage.setItem('my-token', res.data.token)
+        localStorage.setItem('my-refresh-token', res.data.refresh_token)
+      })
+      .catch((err) => {
+        console.log(err.response);
+      });
+  }
+  return <div>
+    <button onClick={handleGetRefreshToken}>get refresh token</button>
+  </div>;
+};
+
+export default Protected;
