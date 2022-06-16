@@ -5,6 +5,40 @@ const jwt = require('jsonwebtoken');
 const randtoken = require('rand-token');
 const todo = require('./data/todo');
 const post = require('./data/post');
+const multer  = require('multer');
+const mime = require('mime-types');
+const PORT = 5000;
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, __dirname+'/public')
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + `.${mime.extension(file.mimetype)}`) //Appending .jpg
+  }
+})
+var upload = multer({ storage: storage });
+
+const isAuth = async (req, res, next) => {
+	// Lấy access token từ header
+	const token = req.headers.authorization;
+	if (!token) {
+		return res.status(401).json({
+      message: 'error'
+    });
+	}
+
+	try {
+    var decoded = jwt.verify(token, 'secret');
+    return next();
+  } catch (err) {
+    // err
+    res.status(401).json({
+      message: 'error'
+    })
+  }
+};
+
+const media = [];
 
 const cors = require('cors');
 const corsConfig = {
@@ -13,6 +47,7 @@ const corsConfig = {
 };
 
 const refreshTokens = {};
+app.use(express.static(__dirname+'/public'))
 
 app.use(cors(corsConfig));
 app.options('*', cors(corsConfig));
@@ -116,4 +151,21 @@ app.get('/refresh-token', (req, res) => {
 
 });
 
-app.listen(5000);
+app.post('/media', [upload.single('media'), isAuth], function (req, res, next) {
+  const url = `http://localhost:${PORT}/${req.file.filename}`;
+  title = req.body.title;
+  media.push({
+    url,
+    title
+  })
+  res.json({
+    url,
+    title
+  })
+})
+
+app.get('/media', function (req, res, next) {
+  res.json(media);
+})
+
+app.listen(PORT);

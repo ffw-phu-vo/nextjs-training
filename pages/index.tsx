@@ -1,8 +1,19 @@
 import type { NextPage } from "next";
 import Link from "next/link";
+import CustomPhoneInput from "../components/CustomPhoneInput/CustomPhoneInput";
+import { useToggle } from "../hooks/useToggle";
+
 const Home: NextPage = () => {
+  const [openMenu, setOpenMenu] = useToggle(true);
+  const [openModal, setModal] = useToggle(true);
   return (
     <div>
+      Menu {openMenu ? 'Is Opend' : 'Is Closed'}
+      <button onClick={setOpenMenu}>Toggle Menu</button>
+
+      <br/>
+      Modal {openModal ? 'Is Opend' : 'Is Closed'}
+      <button onClick={setModal}>Toggle setModal</button>
       <ul>
         <li>
           <Link href="/server">
@@ -20,6 +31,8 @@ const Home: NextPage = () => {
           </Link>
         </li>
       </ul>
+      <CustomPhoneInput />
+
     </div>
   );
 };

@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import axios from "axios";
 import httpClient from "../helper/httpClient";
+import { useRouter } from 'next/router'
+import { setStorage } from "../helper/storage";
+
 const Login = () => {
+  const router = useRouter()
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const handleLoginWithCookieHttpOnly = () => {
@@ -18,8 +23,9 @@ const Login = () => {
     axios.post("http://localhost:5000/login-refresh-token", { username, password })
     .then(res => {
       console.log(res.data)
-      localStorage.setItem('my-token', res.data.token)
-      localStorage.setItem('my-refresh-token', res.data.refresh_token)
+      setStorage('my-token', res.data.token);
+      setStorage('my-refresh-token', res.data.refresh_token);
+      router.push('/media')
     });
   }
 
@@ -47,7 +53,7 @@ const Login = () => {
         onChange={(e) => setPassword(e.target.value)}
       />
       <br />
-      <button onClick={handleLoginWithCookieHttpOnly}>Login</button>
+      <button onClick={handleLoginRefreshToken}>Login</button>
     </div>
   );
 };
