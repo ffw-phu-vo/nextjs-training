@@ -2,30 +2,28 @@ import React from 'react'
 
 import axios from "axios";
 import httpClient from '../helper/httpClient';
+import router from 'next/router';
 
 interface BlogItem {
-  fields: {
-    title: string;
-    alias: string
-  }
+  url: string;
+  title: string;
 }
+
 const Server = (props: any) => {
-  const blog = props.data.items as BlogItem[];
+  const blog = props.data as BlogItem[];
 
   function onImageChange(event: any) {
     if (event.target.files && event.target.files[0]) {
       const img = event.target.files[0];
-      // console.log(img);
-      // console.log(img.name);
-      // console.log(URL.createObjectURL(img));
-
-      const params = new URLSearchParams();
-      params.append('url', URL.createObjectURL(img));
-      params.append('title', img.name);
+      let formData = new FormData();
+      formData.append('media', img);
+      formData.append('title', img.name);
       httpClient
-        .post("/media", params)
+        .post("/media", formData)
         .then((res) => {
-          console.log('finished', res);
+          // console.log('finished', res);
+          event.target.value = null;
+          router.replace(router.asPath);
         })
         .catch((err) => {
           console.log(err.response);
@@ -42,7 +40,14 @@ const Server = (props: any) => {
         {blog && blog.length > 0 && (
           <>
             {blog.map(item => {
-              return <li key={item.fields.alias}>{item.fields.title}</li>
+              return <li key={item.url}>
+                <div>{item.title}</div>
+                <img
+                  src={item.url}
+                  alt={item.title}
+                  width={200}
+                />
+              </li>
             })}
           </>
         )}
@@ -52,8 +57,8 @@ const Server = (props: any) => {
 }
 
 export async function getServerSideProps() {
-  console.log('getServerSideProps')
-  const data = await axios.get('https://cdn.contentful.com/spaces/jpl2kwkwgmlb/environments/master/entries?content_type=blog&access_token=OkqBYBhvvxq0Q7fctCSozAVfrbBCtbIiCtxFefxUHa0');
+  const data = await httpClient.get("/media");
+
   return {
     props: {
       data: data.data
