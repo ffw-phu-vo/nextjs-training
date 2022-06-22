@@ -60,7 +60,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/post', (req, res) => {
-  res.json({ data: post.post(), total: 200, perPage: 15 })
+  res.json({ data: post.post(), total: 200, perPage: 5 })
 });
 
 app.get('/post-detail', (req, res) => {

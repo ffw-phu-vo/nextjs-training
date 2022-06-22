@@ -4,7 +4,7 @@ var chance = new Chance();
 
 const getPost = () => {
   const posts = [];
-  for (let i = 0; i < 15; i++) {
+  for (let i = 0; i < 5; i++) {
     const post =
     {
       "userId": chance.hash({length: 15}),
