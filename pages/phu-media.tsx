@@ -1,6 +1,6 @@
 import React from 'react'
 
-import axios from "axios";
+import Image from 'next/image';
 import httpClient from '../helper/httpClient';
 import router from 'next/router';
 
@@ -42,10 +42,11 @@ const Server = (props: any) => {
             {blog.map(item => {
               return <li key={item.url}>
                 <div>{item.title}</div>
-                <img
+                <Image
                   src={item.url}
                   alt={item.title}
                   width={200}
+                  height={200}
                 />
               </li>
             })}
@@ -58,7 +59,6 @@ const Server = (props: any) => {
 
 export async function getServerSideProps() {
   const data = await httpClient.get("/media");
-
   return {
     props: {
       data: data.data
